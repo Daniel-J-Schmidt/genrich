@@ -2,5 +2,6 @@
 
 export(Hs_calc)
 export(bal_loci)
+export(plot_bal_loci)
 export(rarefy_fst)
 export(shuff_data)
