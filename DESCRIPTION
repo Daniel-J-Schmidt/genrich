@@ -1,0 +1,16 @@
+Package: genrich
+Title: Sampling Statistics for Population Genetics
+Version: 0.0.1
+Authors@R: person("Daniel", "Schmidt", email = "d.schmidt@griffith.edu.au", role = c("aut", "cre"))
+Description: Provides sampling functions for population genetic analyses that integrate with the 
+    hierfstat package.Test whether genetic diversity is higher or lower between population samples
+    while accounting for differences in sample size per locus. Explore effect of sample rarefaction
+    on estimates of FST. Analysis of Molecular Covariance (AMCOVA). Useful for co-dominant datasets
+    (e.g. SNPs or microsatellites).
+Depends: R (>= 3.3.1),
+         hierfstat (>= 0.04)
+Imports: hierfstat (>= 0.04)
+License: GPL (>= 2)
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.0.1
