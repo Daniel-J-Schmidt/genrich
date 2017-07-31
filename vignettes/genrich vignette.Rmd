@@ -1,0 +1,77 @@
+---
+title: "Compare genetic diversity between populations"
+author: "Daniel Schmidt"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+This vignette demonstrates some R functions and associated code developed for comparing genetic diversity between two population samples. The intended application is for data consisting of biallelic SNP loci (e.g. derived from RADseq), but the functions should also work for other data types (e.g. microsatellites). The starting point below is to simulate a suitable dataset in hierfstat format containing data for two populations genotyped at several loci. The simulated dataset includes 100 loci; 2 population samples; 10 individuals per sample.   
+\
+The code was written for comparison of two population samples only; if more than two samples are present in the input file then only the first two listed pop samples are analysed.  
+
+####Functions include:  
++ **"bal_loci"** - takes a hierfstat input file and balances sample size independently for each locus by randomly removing genotypes from the sample with higher n.  
+\
++ **"plot_bal_loci"** - plots difference in sample size between two population samples for each locus; merely for verifying output of bal_loci().  
+\
++ **"Hs_calc"** - for each locus and each population sample, calculates Nei's (1987) gene diversity (= Hs = expected heterozygosity corrected for small sample size). Code is modified from function hierfstat::basic.stats and requires that hierfstat library is loaded.  
+\
++ **"shuff_data"** - randomly permutes individuals between sample groups and calculates difference in gene diversity between the two randomised groups. Used to generate null distribution of difference in gene diversity between two samples for permutation testing.  
+\
++ **"samp_loci"** - randomly sample subsets of loci from the full dataset.  
+\
++ **"resamp_loc_Hs"** - combines function samp_loci and function Hs_calc to examine effect of locus number on difference in mean Hs, between two population samples.  
+\
+### Generate example data
+
+To demonstrate these functions, first generate a small sample dataset called "data" consisting of 100 loci for two population samples (each n = 10) using function hierfstat::sim.genot.
+
+```{r}
+loci <- 100
+data <- hierfstat::sim.genot(size=10,nbal=2,nbloc=loci,nbpop=2,N=c(50,1000),mig=0.001,mut=0.001,f=0)
+```
+
+To demonstrate function bal_loc, make a copy of this dataset called "data.na", then randomly replace some genotypes with missing data (NA's) for each locus.  
+
+```{r}
+data.na <- data
+data.na[, -1] <- sapply(data.na[, -1], function(x) {
+  x[sample(1:nrow(data.na), rbinom(1, 3, 0.5))] <- NA
+  x
+})
+```
+
+
+## Figures
+
+The figure sizes have been customised so that you can easily put two images side-by-side. 
+
+```{r, fig.show='hold'}
+plot(1:10)
+plot(10:1)
+```
+
+You can enable figure captions by `fig_caption: yes` in YAML:
+
+    output:
+      rmarkdown::html_vignette:
+        fig_caption: yes
+
+Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
+
+## More Examples
+
+You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
+
+```{r, echo=FALSE, results='asis'}
+knitr::kable(head(mtcars, 10))
+```
+
+Also a quote using `>`:
+
+> "He who gives up [code] safety for [code] speed deserves neither."
+([via](https://twitter.com/hadleywickham/status/504368538874703872))
