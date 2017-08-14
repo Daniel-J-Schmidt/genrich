@@ -8,7 +8,8 @@ Description: Provides sampling functions for population genetic analyses that in
     on estimates of FST. Analysis of Molecular Covariance (AMCOVA). Useful for co-dominant datasets
     (e.g. SNPs or microsatellites).
 Depends: R (>= 3.3.1),
-         hierfstat (>= 0.04)
+         hierfstat (>= 0.04),
+         parallel (>= 3.3.0)
 Imports: hierfstat (>= 0.04)
 License: GPL (>= 2)
 Encoding: UTF-8

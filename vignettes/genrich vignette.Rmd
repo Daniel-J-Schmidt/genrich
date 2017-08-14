@@ -11,7 +11,7 @@ vignette: >
 
 This vignette demonstrates some functions developed for comparing genetic diversity between two population samples. The intended application is for data consisting of biallelic SNP loci (e.g. derived from RADseq), but the functions should also work for other data types (e.g. microsatellites). The starting point below is to simulate a suitable dataset in hierfstat format containing data for two populations genotyped at several loci. The simulated dataset includes 100 loci; 2 population samples; 10 individuals per sample.   
 \
-The code was written for comparison of two population samples only; if more than two samples are present in the input file then only the first two listed pop samples are analysed.  
+The code was written for direct comparison of two population samples genotyped for a common set of co-dominant loci; if more than two samples are present in the input file then only the first two listed pop samples are analysed.  
 
 ####Functions include:  
 + **"bal_loci"** - takes a hierfstat input file and balances sample size independently for each locus by randomly removing genotypes from the sample with higher n.  
@@ -26,8 +26,13 @@ The code was written for comparison of two population samples only; if more than
 \
 + **"resamp_loc_Hs"** - combines function samp_loci and function Hs_calc to examine effect of locus number on difference in mean Hs, between two population samples.  
 \
-
-###Generate example data
+### Required libraries
+```{r, message = FALSE, warning = FALSE}
+library(genrich)
+library(hierfstat)
+```
+\
+### Generate example data
 
 To demonstrate these functions, first generate a small sample dataset called "data" consisting of 100 loci for two population samples (each n = 10) using function hierfstat::sim.genot.
 
@@ -36,7 +41,7 @@ loci <- 100
 data <- hierfstat::sim.genot(size=10,nbal=2,nbloc=loci,nbpop=2,N=c(50,1000),mig=0.001,mut=0.001,f=0)
 ```
 
-To demonstrate function bal_loc, make a copy of this dataset called "data.na", then randomly replace some genotypes with missing data (NA's) for each locus.  
+Make a copy of this dataset called "data.na", then randomly replace some genotypes with missing data (NA's) for each locus.  
 
 ```{r}
 data.na <- data
@@ -47,22 +52,27 @@ data.na[, -1] <- sapply(data.na[, -1], function(x) {
 ```
 
 
-## Figures
-
-The figure sizes have been customised so that you can easily put two images side-by-side. 
-
-```{r, fig.show='hold'}
-plot(1:10)
-plot(10:1)
+### Function plot_bal_loci
+Compares missing data per locus between samples and plots the difference in sample size between the two populations; provides a check on the outcome of bal_loci.  
+### Function bal_loci
+This function will take a dataset with uneven sample size and equalise sample size independently for each locus.
+```{r, fig.show='hold', fig.width=8, fig.height=3}
+par(mfrow = c(1, 2))
+data.na.bal <- bal_loci(data.na)
+plot_bal_loci(data.na, col = "red", main = "unbalanced")
+plot_bal_loci(data.na.bal, col = "red", main = "balanced")
 ```
 
-You can enable figure captions by `fig_caption: yes` in YAML:
+The above plot on the left should return a flatline with zero intercept on the y-axis. This simply reflects that sample size is equal between the two populations at every locus in the simulated dataset. The simulated dataset has equal sample sizes (n=10)  and has no missing data.   
+\
+The plot on the right shows the same dataset with missing data randomly introduced at each locus. It should return a wavy line reflecting the random difference in sample size between the two populations, with maximum difference in sample size per locus of 3.  
+\
+###Function shuff_data
+Permutes individuals among two sample groups and returns difference in mean Hs between the permuted samples. A permutation test for comparing gene diversity (Hs) between two population samples
+First calculate the observed difference in Hs between the two samples (Hs_mdiff_obs) using function Hs_calc.
 
-    output:
-      rmarkdown::html_vignette:
-        fig_caption: yes
 
-Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
+
 
 ## More Examples
 

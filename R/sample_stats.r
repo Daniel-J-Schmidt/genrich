@@ -105,3 +105,55 @@ shuff_data <- function(data, reps = 100, bal.loci = TRUE) {
     return(as.vector(do.call(rbind, not.bal)))
   }
 }
+
+#' Calculate null distribution of difference in allelic richness (ar) between two populations.
+#'
+#' Calculates null distribution of allelic richness for two population samples.
+#' Allows a test for significant difference in mean allelic richness between the
+#' two samples. Individuals in the two samples are randomly permuted and allelic
+#' richness of the two permuted population samples is recorded along with
+#' minimum sample size used for rarefaction in each iteration. The calculation
+#' calls on function hierfstat::allelic.richness from hierfstat package, and
+#' data is required in hierfstat format. An option is provided to run ar_rich in
+#' parallel.
+#' @return A dataframe containing three columns, with rows equal to number of
+#'   reps in the permutation. First two columns contain mean allelic richness of
+#'   two populations being compared, third column contains minimum sample size.
+#' @param reps Number of iterations to repeat the permutation. If not specified,
+#'   defaults to 10.
+#' @param para Option to run permutations in parallel on multiple computer
+#'   cores. If not specified, defaults to TRUE.
+#' @examples
+#' test <- ar_test(dat.sim, reps = 10, para = TRUE)
+#' @export
+#'
+ar_test <- function(data, reps = 10, para = TRUE) {
+  if (para) {
+    no_cores <- detectCores() # Calculate the number of cores
+    cl <- makeCluster(no_cores - 1) # Initiate cluster
+    clusterExport(
+      cl = cl,
+      varlist = c("ind.count", "allelic.richness", "allele.count", "data"),
+      envir = environment()
+    ) #specify environment variables
+    start <- Sys.time()
+    loop <- parLapply(cl, seq_len(reps), function (x) {
+      data[, 1] <- sample(data[, 1])
+      ar <- allelic.richness(data)
+      c(colMeans(ar[[2]]), ar[[1]])
+    })
+    stopCluster(cl) #close the cluster when finished with parallel
+  } else {
+    start <- Sys.time()
+    loop <- lapply(seq_len(reps), function (x) {
+      data[, 1] <- sample(data[, 1])
+      ar <- allelic.richness(data)
+      c(colMeans(ar[[2]]), ar[[1]])
+    })
+  }
+  print(Sys.time() - start)
+  return(setNames(
+    data.frame(do.call(rbind, loop)),
+    c("pop1.mean.rich", "pop2.mean.rich", "min.n")
+  ))
+}

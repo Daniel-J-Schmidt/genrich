@@ -3,7 +3,7 @@
 genrich
 =======
 
-The R package genrich includes functions for comparing genetic diversity between populations. genrich works in conjunction with R package hierfstat to calculate gene diversity (Hs) of population samples on 'a level playing field', where the sample size of each locus is balanced between populations. A permutation procedure facilitates testing whether diversity is higher in one sample relative to another, and estimation of confidence intervals. Other functions include rarefaction of population-specific FST estimates; private allelic richness (still to come); analysis of molecular covariance (AMCOVA; still to come). genrich expects data in hierfstat format (see: <https://cran.r-project.org/web/packages/hierfstat/index.html>).
+The R package genrich includes functions for comparing genetic diversity between populations. genrich works in conjunction with R package hierfstat to calculate gene diversity (Hs) of population samples on 'a level playing field', where the sample size of each locus is balanced between populations. A permutation procedure facilitates testing whether diversity is higher in one sample relative to another, and estimation of confidence intervals via bootstrapping. Other functions include rarefaction of population-specific FST estimates; private allelic richness (still to come); analysis of molecular covariance (AMCOVA; still to come). genrich expects data in hierfstat format (see: <https://cran.r-project.org/web/packages/hierfstat/index.html>).
 
 Installation
 ------------
